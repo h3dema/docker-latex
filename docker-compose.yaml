@@ -1,0 +1,12 @@
+version: "3.9"
+
+services:
+  latex-builder:
+    build: .
+    container_name: latex-builder
+    environment:
+      - LATEX_MAIN=main.tex   # can be overridden
+    volumes:
+      - ./doc:/workspace/doc
+    working_dir: /workspace/doc
+
