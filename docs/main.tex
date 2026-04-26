@@ -1,0 +1,80 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage{hyperref}
+\usepackage{geometry}
+\usepackage{titlesec}
+\usepackage{setspace}
+
+\geometry{margin=1in}
+\setstretch{1.2}
+
+\titleformat{\section}{\large\bfseries}{\thesection}{1em}{}
+
+\title{Using the LaTeX Build Container}
+\author{Henrique Moura}
+% \date{}
+
+\begin{document}
+
+\maketitle
+
+\section{Overview}
+
+This repository provides a fully containerized LaTeX build environment based on Ubuntu and a complete TeX Live installation. The container automatically compiles the document located in the \texttt{doc/} directory when started. Bibliography files are supported, and optional LaTeX packages can be installed dynamically using an \texttt{install.lst} file.
+
+\section{Cloning the Repository}
+
+To obtain the repository locally, run:
+
+\begin{verbatim}
+git clone git@github.com:h3dema/docker-latex.git
+cd docker-latex
+\end{verbatim}
+
+
+\section{Building the Container}
+
+The project includes a \texttt{docker-compose.yaml} file that builds the image and sets up the workspace mount.
+
+\begin{verbatim}
+docker-compose build
+\end{verbatim}
+
+This step installs:
+\begin{itemize}
+    \item Ubuntu base system
+    \item Full TeX Live distribution
+    \item \texttt{latexmk} for automated compilation
+    \item A custom entrypoint script that handles package installation and PDF generation
+\end{itemize}
+
+\section{Running the Container}
+
+To compile the LaTeX project inside \texttt{doc/}, run:
+
+\begin{verbatim}
+docker-compose up
+\end{verbatim}
+
+The container will:
+
+\begin{enumerate}
+    \item Check for \texttt{/workspace/doc/install.lst}.  
+          If present, each package listed (one per line) is installed using \texttt{tlmgr}.
+    \item Determine the main \texttt{.tex} file.  
+          The default is \texttt{main.tex}, but it can be overridden:
+\begin{verbatim}
+LATEX_MAIN=thesis.tex docker-compose up
+\end{verbatim}
+    \item Compile the document using \texttt{latexmk}, including bibliography support.
+\end{enumerate}
+
+The resulting PDF will appear inside your local \texttt{doc/} directory.
+
+\begin{itemize}
+    \item The \texttt{install.lst} file is optional and allows dynamic installation of additional LaTeX packages.
+    \item Bibliography files (\texttt{.bib}) are automatically handled by \texttt{latexmk}.
+    \item The container always compiles the document on startup; no manual commands inside the container are required.
+\end{itemize}
+
+\end{document}
